@@ -143,23 +143,24 @@ app_license = "apache-2.0"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"drift.tasks.all"
-# 	],
-# 	"daily": [
-# 		"drift.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"drift.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"drift.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"drift.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"all": [],
+	"hourly": [],
+	"cron": {
+		"* * * * * 0/5": [
+			"drift.drift.doctype.drift_settings.drift_settings.sync_servers",
+			"drift.drift.doctype.drift_settings.drift_settings.sync_sessions",
+		],
+		"*/5 * * * *": [
+			"drift.drift.doctype.drift_session.drift_session.trigger_sync_video_ids_and_download",
+			"drift.drift.doctype.drift_session.drift_session.sync_video_download_status",
+		],
+		"* * * * *": [
+			"drift.drift.doctype.drift_session_video.drift_session_video.download_session_videos",
+			"drift.drift.doctype.drift_session.drift_session.purge_downloaded_remote_videos",
+		],
+	},
+}
 
 # Testing
 # -------
@@ -231,9 +232,8 @@ app_license = "apache-2.0"
 # ]
 
 # Automatically update python controller files with type annotations for this app.
-# export_python_type_annotations = True
+export_python_type_annotations = True
 
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
-

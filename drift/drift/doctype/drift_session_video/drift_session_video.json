@@ -1,0 +1,63 @@
+{
+ "actions": [],
+ "creation": "2025-09-06 20:41:24.198676",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "id",
+  "status",
+  "file",
+  "file_url_path"
+ ],
+ "fields": [
+  {
+   "fieldname": "id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "ID",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Pending\nDownloaded\nDownload Failed\nDeleted",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "file",
+   "fieldtype": "Link",
+   "label": "File",
+   "options": "File",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "file.file_url",
+   "fieldname": "file_url_path",
+   "fieldtype": "Data",
+   "label": "File URL Path",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-07 12:42:01.532020",
+ "modified_by": "Administrator",
+ "module": "Drift",
+ "name": "Drift Session Video",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

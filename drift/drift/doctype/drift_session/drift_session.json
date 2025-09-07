@@ -1,0 +1,191 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-06 20:34:11.283430",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "status",
+  "column_break_ybpc",
+  "server",
+  "section_break_ipwx",
+  "video_html",
+  "section_break_dmxf",
+  "session_id",
+  "column_break_zntm",
+  "session_token",
+  "column_break_cccr",
+  "cdp_endpoint",
+  "section_break_sjyc",
+  "started_on",
+  "column_break_haoa",
+  "ended_on",
+  "column_break_avja",
+  "duration",
+  "section_break_rcjo",
+  "videos",
+  "section_break_iskq",
+  "video_download_status",
+  "column_break_rxrb",
+  "purged_videos_from_server"
+ ],
+ "fields": [
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Active\nStopped",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "session_id",
+   "fieldtype": "Data",
+   "label": "Session ID",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ybpc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "server",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Server",
+   "options": "Drift Server",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "session_token",
+   "fieldtype": "Password",
+   "label": "Session Token",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_sjyc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "started_on",
+   "fieldtype": "Datetime",
+   "label": "Started On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_haoa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ended_on",
+   "fieldtype": "Datetime",
+   "label": "Ended On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_avja",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "duration",
+   "fieldtype": "Duration",
+   "hide_days": 1,
+   "label": "Duration",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_rcjo",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "videos",
+   "fieldtype": "Table",
+   "label": "Videos",
+   "options": "Drift Session Video"
+  },
+  {
+   "default": "0",
+   "fieldname": "purged_videos_from_server",
+   "fieldtype": "Check",
+   "label": "Purged Videos From Server",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cdp_endpoint",
+   "fieldtype": "Data",
+   "label": "CDP Endpoint",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_iskq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_rxrb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "video_download_status",
+   "fieldtype": "Select",
+   "label": "Video Download Status",
+   "options": "Draft\nTriggered\nDownloading\nDownloaded\nDeleted",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval: doc.video_download_status == \"Downloaded\"",
+   "fieldname": "section_break_ipwx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "video_html",
+   "fieldtype": "HTML",
+   "label": "Video",
+   "options": "<div id=\"video_container\"></div>"
+  },
+  {
+   "fieldname": "section_break_dmxf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_zntm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_cccr",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-07 13:30:49.845586",
+ "modified_by": "Administrator",
+ "module": "Drift",
+ "name": "Drift Session",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
