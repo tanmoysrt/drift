@@ -81,6 +81,7 @@ class DriftTest(Document):
 			"Drift Test Step Definition", step.step
 		)
 		code = step_definition.code.strip()
+		code = code.replace("{{sid}}", self.session_user_sid or "")
 
 		with self.session_doc.pw_browser() as browser:
 			safe_exec_locals = prepare_safe_exec_locals(self.variables_dict)
@@ -95,8 +96,10 @@ class DriftTest(Document):
 				pw_context = browser.contexts[0] if browser.contexts else browser.new_context()
 				pw_page = pw_context.pages[0] if pw_context.pages else pw_context.new_page()
 				safe_exec_locals.update({"pw_ctx": pw_context, "pw_page": pw_page, "doc": self})
+
 				# Execute the code
 				safe_exec(code, _locals=safe_exec_locals)
+
 				# Extract variables and store those
 				self.variables = json.dumps(safe_exec_locals.get("variables", {}), indent=2)
 				step.no_of_attempts = (step.no_of_attempts or 0) + 1

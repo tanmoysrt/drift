@@ -1,8 +1,8 @@
 # Copyright (c) 2025, Tanmoy and contributors
 # For license information, please see license.txt
 
-# import frappe
 from frappe.model.document import Document
+from frappe.utils import get_url
 
 
 class DriftTestStepDefinition(Document):
@@ -32,7 +32,8 @@ class DriftTestStepDefinition(Document):
 			return self.server_script or ""
 		elif self.type == "UI Navigation":
 			if self.ui_navigation_type == "Goto" and self.ui_navigation_goto_url:
-				return f"""pw_page.goto("{self.ui_navigation_goto_url}",wait_until="domcontentloaded")"""
+				url = get_url(self.ui_navigation_goto_url)
+				return f"""pw_page.goto("{url}",wait_until="domcontentloaded")"""
 			elif self.ui_navigation_type == "Reload":
 				return """pw_page.reload(wait_until="domcontentloaded")"""
 			elif self.ui_navigation_type == "Forward":
