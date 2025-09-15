@@ -1,0 +1,101 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "prompt",
+ "creation": "2025-09-07 14:31:06.733629",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "column_break_fzew",
+  "test_setup",
+  "interval_minutes",
+  "column_break_dngf",
+  "last_executed_on",
+  "next_execution_on",
+  "section_break_rdvs",
+  "steps"
+ ],
+ "fields": [
+  {
+   "fieldname": "test_setup",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Test Setup",
+   "options": "Drift Test Setup",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "column_break_fzew",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "60",
+   "description": "Run every X minutes",
+   "fieldname": "interval_minutes",
+   "fieldtype": "Int",
+   "label": "Interval Minutes",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_dngf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_executed_on",
+   "fieldtype": "Datetime",
+   "label": "Last Executed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "next_execution_on",
+   "fieldtype": "Datetime",
+   "label": "Next Execution On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_rdvs",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "steps",
+   "fieldtype": "Table",
+   "label": "Steps",
+   "options": "Drift Test Step Definition",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-14 19:25:59.111892",
+ "modified_by": "Administrator",
+ "module": "Drift",
+ "name": "Drift Test Definition",
+ "naming_rule": "Set by user",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

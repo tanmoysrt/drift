@@ -92,7 +92,7 @@ class DriftServer(Document):
 		if not success:
 			frappe.throw("Failed to create browser session on the server")
 
-		return frappe.get_doc(
+		session = frappe.get_doc(
 			{
 				"doctype": "Drift Session",
 				"status": "Active",
@@ -103,6 +103,10 @@ class DriftServer(Document):
 				"started_on": datetime.fromtimestamp(data.get("created_on")),
 			}
 		).insert(ignore_permissions=True)
+		# Do db commit to save the session immediately
+		# Else, it can be lost if some other error happens
+		frappe.db.commit()
+		return session
 
 	def destroy_session(self, session_id: str) -> bool:
 		# Destroy the session on this server

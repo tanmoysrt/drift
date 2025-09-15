@@ -23,9 +23,8 @@ class DriftSession(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from drift.drift.doctype.drift_session_video.drift_session_video import DriftSessionVideo
+		from frappe.types import DF
 
 		cdp_endpoint: DF.Data
 		duration: DF.Duration | None

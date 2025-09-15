@@ -1,0 +1,99 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "prompt",
+ "creation": "2025-09-07 13:57:44.263685",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "default_local_variables",
+  "test_user_setup_section",
+  "user_type",
+  "new_user_creation_script",
+  "existing_user",
+  "cleanup_section",
+  "script_to_find_resources_to_cleanup"
+ ],
+ "fields": [
+  {
+   "default": "Existing User",
+   "fieldname": "user_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "User Type",
+   "options": "Existing User\nNew User",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval: doc.user_type == \"Existing User\"",
+   "fieldname": "existing_user",
+   "fieldtype": "Link",
+   "label": "Existing User",
+   "mandatory_depends_on": "eval: doc.user_type == \"Existing User\"",
+   "options": "User"
+  },
+  {
+   "fieldname": "test_user_setup_section",
+   "fieldtype": "Section Break",
+   "label": "Test User Setup"
+  },
+  {
+   "fieldname": "cleanup_section",
+   "fieldtype": "Section Break",
+   "label": "Cleanup"
+  },
+  {
+   "default": "results = [ ]",
+   "description": "Put the info in results variables<br><br>\n<pre>results = [\n  {\n     \"doctype\": \"Server\",\n     \"name\" : \"f1-mumbai.frappe.cloud\"\n  }\n]\n</pre>\n\nIn local scope, only the <b>User</b> object will be available in <b>user</b> variable.",
+   "fieldname": "script_to_find_resources_to_cleanup",
+   "fieldtype": "Code",
+   "label": "Script To Find Resources to Cleanup",
+   "options": "Python",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval: doc.user_type == \"New User\"",
+   "description": "Set the user's id in <strong>user</strong> variable.\n<br>New users will be disabled automatically",
+   "fieldname": "new_user_creation_script",
+   "fieldtype": "Code",
+   "label": "New User Creation Script",
+   "mandatory_depends_on": "eval: doc.user_type == \"New User\"",
+   "options": "Python"
+  },
+  {
+   "default": "{}",
+   "description": "While executing any script related to test, this variables will be injected in local scope.",
+   "fieldname": "default_local_variables",
+   "fieldtype": "JSON",
+   "label": "Default Local Variables",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-14 19:45:23.808277",
+ "modified_by": "Administrator",
+ "module": "Drift",
+ "name": "Drift Test Setup",
+ "naming_rule": "Set by user",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

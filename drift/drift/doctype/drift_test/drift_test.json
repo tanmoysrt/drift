@@ -1,0 +1,101 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-07 16:13:38.891947",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "definition",
+  "column_break_ilez",
+  "session",
+  "session_user",
+  "section_break_dpac",
+  "steps",
+  "section_break_ruzr",
+  "variables",
+  "documents"
+ ],
+ "fields": [
+  {
+   "fieldname": "definition",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Definition",
+   "options": "Drift Test Definition",
+   "reqd": 1,
+   "search_index": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "column_break_ilez",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "session_user",
+   "fieldtype": "Data",
+   "label": "Session User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_dpac",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "steps",
+   "fieldtype": "Table",
+   "label": "Steps",
+   "options": "Drift Test Step",
+   "reqd": 1
+  },
+  {
+   "fieldname": "documents",
+   "fieldtype": "Table",
+   "label": "Documents",
+   "options": "Drift Test Document"
+  },
+  {
+   "fieldname": "section_break_ruzr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "{}",
+   "fieldname": "variables",
+   "fieldtype": "Small Text",
+   "label": "Variables",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "session",
+   "fieldtype": "Link",
+   "label": "Session",
+   "options": "Drift Session"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-14 20:22:33.087351",
+ "modified_by": "Administrator",
+ "module": "Drift",
+ "name": "Drift Test",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
