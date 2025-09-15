@@ -33,6 +33,16 @@ class DriftTestDefinition(Document):
 		test_setup: DF.Link
 	# end: auto-generated types
 
+	def validate(self):
+		if self.interval_minutes is not None and self.interval_minutes < 2:
+			frappe.throw("Interval Minutes cannot be less than 2 minutes")
+
+		if self.interval_minutes and not self.next_execution_on:
+			self.next_execution_on = frappe.utils.add_to_date(None, minutes=self.interval_minutes)
+
+		if not self.steps:
+			frappe.throw("Please add at least one step")
+
 	@frappe.whitelist()
 	def create_test(self) -> "DriftTest":
 		session = get_random_session_server().create_session()
@@ -64,3 +74,18 @@ class DriftTestDefinition(Document):
 		self.save(ignore_permissions=True, ignore_version=True)
 		frappe.msgprint(f"Test <a href='/app/drift-test/{test.name}'>{test.name}</a> created successfully")
 		return test
+
+
+def auto_trigger_tests():
+	for definition in frappe.get_all(
+		"Drift Test Definition",
+		filters={"enabled": 1, "next_execution_on": ["<=", frappe.utils.now_datetime()]},
+		pluck="name",
+	):
+		try:
+			test = frappe.get_doc("Drift Test Definition", definition).create_test()
+			test.next()
+			frappe.db.commit()
+		except Exception as e:
+			frappe.log_error("Failed to auto trigger test: " + definition, e)
+			continue

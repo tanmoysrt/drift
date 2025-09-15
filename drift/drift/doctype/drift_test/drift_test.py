@@ -215,3 +215,15 @@ class DriftTest(Document):
 
 		if save:
 			self.save(ignore_version=True)
+
+	def cleanup(self):
+		"""
+		Execute - script_to_find_resources_to_cleanup of drift_test_setup doctype
+		to find and delete resources created by this test.
+
+		Need another script for cleanup those as well.
+		Try running until unless all resources are cleaned up.
+
+		If it was a user created for this test, delete that user as well, this can be part of previous script as well.
+		"""
+		pass

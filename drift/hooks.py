@@ -158,6 +158,7 @@ scheduler_events = {
 			"drift.drift.doctype.drift_session.drift_session.sync_video_download_status",
 			"drift.drift.doctype.drift_session_video.drift_session_video.download_session_videos",
 			"drift.drift.doctype.drift_session.drift_session.purge_downloaded_remote_videos",
+			"drift.drift.doctype.drift_test_definition.drift_test_definition.auto_trigger_tests",
 		],
 	},
 }
