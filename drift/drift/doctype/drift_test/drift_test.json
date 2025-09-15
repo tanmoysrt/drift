@@ -6,9 +6,11 @@
  "engine": "InnoDB",
  "field_order": [
   "definition",
+  "status",
   "column_break_ilez",
   "session",
   "session_user",
+  "session_user_sid",
   "section_break_dpac",
   "steps",
   "section_break_ruzr",
@@ -22,6 +24,7 @@
    "in_list_view": 1,
    "label": "Definition",
    "options": "Drift Test Definition",
+   "read_only": 1,
    "reqd": 1,
    "search_index": 1,
    "set_only_once": 1
@@ -69,13 +72,29 @@
    "fieldname": "session",
    "fieldtype": "Link",
    "label": "Session",
-   "options": "Drift Session"
+   "options": "Drift Session",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Pending\nRunning\nSuccess\nFailure\nCancelled\nStopped",
+   "read_only": 1
+  },
+  {
+   "fieldname": "session_user_sid",
+   "fieldtype": "Data",
+   "label": "Session User Sid",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-14 20:22:33.087351",
+ "modified": "2025-09-16 00:47:36.047649",
  "modified_by": "Administrator",
  "module": "Drift",
  "name": "Drift Test",

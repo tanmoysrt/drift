@@ -15,6 +15,7 @@ class DriftTestStep(Document):
 		from frappe.types import DF
 
 		duration: DF.Duration | None
+		ended_at: DF.Datetime | None
 		error: DF.Data | None
 		last_attempted_at: DF.Datetime | None
 		no_of_attempts: DF.Int
@@ -24,8 +25,8 @@ class DriftTestStep(Document):
 		started_at: DF.Datetime | None
 		status: DF.Literal["Pending", "Running", "Success", "Failure"]
 		step: DF.Link
+		step_title: DF.Data | None
 		traceback: DF.Code | None
-		wait_for_completion: DF.Check
 	# end: auto-generated types
 
 	pass

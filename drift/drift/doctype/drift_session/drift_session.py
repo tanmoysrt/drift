@@ -2,11 +2,12 @@
 # For license information, please see license.txt
 
 import contextlib
+from collections.abc import Generator
 from typing import TYPE_CHECKING
 
 import frappe
 from frappe.model.document import Document
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import Browser, sync_playwright
 
 if TYPE_CHECKING:
 	from drift.drift.doctype.drift_server.drift_server import DriftServer
@@ -23,8 +24,9 @@ class DriftSession(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from drift.drift.doctype.drift_session_video.drift_session_video import DriftSessionVideo
 		from frappe.types import DF
+
+		from drift.drift.doctype.drift_session_video.drift_session_video import DriftSessionVideo
 
 		cdp_endpoint: DF.Data
 		duration: DF.Duration | None
@@ -55,7 +57,7 @@ class DriftSession(Document):
 				self.sync_video_ids_and_download()
 
 	@contextlib.contextmanager
-	def pw_session(self):
+	def pw_browser(self) -> Generator[Browser, None, None]:
 		pw = sync_playwright().start()
 		browser = pw.chromium.connect_over_cdp(
 			self.cdp_endpoint, headers={"Authorization": f"Bearer {self.get_password('session_token')}"}
@@ -67,7 +69,8 @@ class DriftSession(Document):
 		finally:
 			# don't close the browser, just stop playwright
 			# as we will reuse the browser for the lifetime of the session
-			pw.stop()
+			with contextlib.suppress(Exception):
+				pw.stop()
 
 	@frappe.whitelist()
 	def destroy_remote_session(self) -> bool:
@@ -140,7 +143,15 @@ class DriftSession(Document):
 def trigger_sync_video_ids_and_download():
 	sessions = frappe.get_all(
 		"Drift Session",
-		filters={"status": "Stopped", "video_download_status": "Triggered"},
+		filters={
+			"status": "Stopped",
+			"video_download_status": "Triggered",
+			"ended_on": (
+				">",
+				frappe.utils.add_to_date(minutes=-2),
+			),  # wait for at least 2 minutes after stopping to ensure videos has been written
+			# TODO: need a better fix on agent side to ensure videos are ready to be downloaded instantly after stopping
+		},
 		pluck="name",
 	)
 	for session in sessions:

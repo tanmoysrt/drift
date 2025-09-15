@@ -153,9 +153,9 @@ scheduler_events = {
 		],
 		"*/5 * * * *": [
 			"drift.drift.doctype.drift_session.drift_session.trigger_sync_video_ids_and_download",
-			"drift.drift.doctype.drift_session.drift_session.sync_video_download_status",
 		],
 		"* * * * *": [
+			"drift.drift.doctype.drift_session.drift_session.sync_video_download_status",
 			"drift.drift.doctype.drift_session_video.drift_session_video.download_session_videos",
 			"drift.drift.doctype.drift_session.drift_session.purge_downloaded_remote_videos",
 		],

@@ -37,7 +37,30 @@ class DriftTestDefinition(Document):
 	def create_test(self) -> "DriftTest":
 		session = get_random_session_server().create_session()
 		test = frappe.get_doc(
-			{"doctype": "Drift Test", "definition": self.name, "session": session.name, "session_user": None}
+			{
+				"doctype": "Drift Test",
+				"definition": self.name,
+				"session": session.name,
+				"session_user": None,
+				"variables": frappe.db.get_value(
+					"Drift Test Setup", self.test_setup, "default_local_variables"
+				),
+				"steps": [],
+			}
 		)
+		for step in self.steps:
+			test.append(
+				"steps",
+				{
+					"step": step.name,
+					"status": "Pending",
+				},
+			)
 		test.insert(ignore_permissions=True)
+		self.last_executed_on = frappe.utils.now_datetime()
+		self.next_execution_on = frappe.utils.add_to_date(
+			self.last_executed_on, minutes=self.interval_minutes
+		)
+		self.save(ignore_permissions=True, ignore_version=True)
+		frappe.msgprint(f"Test <a href='/app/drift-test/{test.name}'>{test.name}</a> created successfully")
 		return test

@@ -26,4 +26,20 @@ class DriftTestStepDefinition(Document):
 		wait_for_completion: DF.Check
 	# end: auto-generated types
 
-	pass
+	@property
+	def code(self) -> str:
+		if self.type == "Server Script":
+			return self.server_script or ""
+		elif self.type == "UI Navigation":
+			if self.ui_navigation_type == "Goto" and self.ui_navigation_goto_url:
+				return f"""pw_page.goto("{self.ui_navigation_goto_url}",wait_until="domcontentloaded")"""
+			elif self.ui_navigation_type == "Reload":
+				return """pw_page.reload(wait_until="domcontentloaded")"""
+			elif self.ui_navigation_type == "Forward":
+				return """pw_page.go_forward(wait_until="domcontentloaded")"""
+			elif self.ui_navigation_type == "Backward":
+				return """pw_page.go_back(wait_until="domcontentloaded")"""
+		elif self.type == "Setup User Session":
+			return """"""
+
+		return ""

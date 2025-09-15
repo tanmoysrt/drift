@@ -4,9 +4,9 @@
 frappe.ui.form.on("Drift Test Definition", {
     refresh(frm) {
         [
-            ["Create Test", "create_test"]
+            ["Test Now", "create_test"]
         ].forEach(([label, method]) => {
-            frm.add_custom_button(label, () => frm.call(method), "Actions");
+            frm.add_custom_button(label, () => frm.call(method));
         });
 	},
 });

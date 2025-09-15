@@ -5,6 +5,8 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils.safe_exec import safe_exec
 
+from drift.drift.utils import prepare_safe_exec_locals
+
 
 class DriftTestSetup(Document):
 	# begin: auto-generated types
@@ -34,7 +36,7 @@ class DriftTestSetup(Document):
 		if not self.new_user_creation_script:
 			frappe.throw("Please provide a script to create a new user")
 
-		local_vars = {"variables": frappe._dict(variables or self.default_local_variables or {})}
+		local_vars = prepare_safe_exec_locals(variables or {})
 		safe_exec(self.new_user_creation_script, _locals=local_vars)
 
 		if "user" not in local_vars["variables"]:
