@@ -145,6 +145,18 @@ class DriftTest(Document):
 		if step.status == "Failure":
 			self.finish(save=True)
 		else:
+			# Check if session user or sid has been updated in variables
+			variables = self.variables_dict
+			if (
+				"session_user" in variables
+				and "session_user_sid" in variables
+				and variables.get("session_user")
+				and variables.get("session_user_sid")
+			):
+				self.session_user = variables.get("session_user")
+				self.session_user_sid = variables.get("session_user_sid")
+
+			# Save the test and move to next step
 			self.save(ignore_version=True)
 			self.next()
 

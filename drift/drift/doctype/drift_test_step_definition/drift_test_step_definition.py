@@ -40,6 +40,12 @@ class DriftTestStepDefinition(Document):
 			elif self.ui_navigation_type == "Backward":
 				return """pw_page.go_back(wait_until="domcontentloaded")"""
 		elif self.type == "Setup User Session":
-			return """"""
+			return """
+setup = frappe.get_doc("Drift Test Setup", frappe.db.get_value("Drift Test Definition", doc.definition, "test_setup"))
+user = setup.get_user(variables)
+
+variables["session_user"] = user
+variables["session_user_sid"] = get_login_sid(user)
+"""
 
 		return ""
