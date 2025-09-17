@@ -1,6 +1,7 @@
 # Copyright (c) 2025, Tanmoy and contributors
 # For license information, please see license.txt
 
+import contextlib
 import json
 from typing import TYPE_CHECKING, Optional
 
@@ -30,8 +31,10 @@ class DriftTest(Document):
 		from drift.drift.doctype.drift_test_document.drift_test_document import DriftTestDocument
 		from drift.drift.doctype.drift_test_step.drift_test_step import DriftTestStep
 
+		cleanup_completed: DF.Check
 		definition: DF.Link
 		documents: DF.Table[DriftTestDocument]
+		gc_completed: DF.Check
 		session: DF.Link | None
 		session_user: DF.Data | None
 		session_user_sid: DF.Data | None
@@ -214,14 +217,134 @@ class DriftTest(Document):
 		if save:
 			self.save(ignore_version=True)
 
+	@frappe.whitelist()
+	def garbage_collect(self):
+		frappe.enqueue_doc(
+			self.doctype,
+			self.name,
+			method="garbage_collect",
+			timeout=600,
+			deduplicate=True,
+			job_id=f"drift_test_gc||{self.name}",
+			enqeue_after_commit=True,
+		)
+
+	def _garbage_collect(self):
+		user_key = self.variables_dict.get(
+			frappe.get_value("Drift Test Definition", self.definition, "user_key")
+		)
+		if not user_key:
+			return
+		user = frappe.get_doc("User", user_key)
+
+		# Fetch the script
+		script = frappe.get_value(
+			"Drift Test Setup",
+			frappe.get_value("Drift Test Definition", self.definition, "test_setup"),
+			"script_to_find_resources_to_cleanup",
+		)
+
+		try:
+			safe_exec_locals = prepare_safe_exec_locals(self.variables_dict)
+			safe_exec_locals.update({"user": user, "doc": self})
+			safe_exec(script, _locals=safe_exec_locals)
+			results = safe_exec_locals.get("results", [])
+			self.documents = []
+			for r in results:
+				self.append(
+					"documents",
+					{
+						"document_name": r.get("name"),
+						"document_type": r.get("doctype"),
+						"cleanup_status": "Pending",
+					},
+				)
+			self.gc_completed = 1
+			if not results:
+				self.cleanup_completed = 1
+			self.save()
+		except Exception:
+			frappe.log_error(
+				"Failed to garbage collection", reference_doctype=self.doctype, reference_name=self.name
+			)
+
+	@frappe.whitelist()
 	def cleanup(self):
-		"""
-		Execute - script_to_find_resources_to_cleanup of drift_test_setup doctype
-		to find and delete resources created by this test.
+		frappe.enqueue_doc(
+			self.doctype,
+			self.name,
+			method="cleanup",
+			timeout=600,
+			deduplicate=True,
+			job_id=f"drift_test_cleanup||{self.name}",
+			enqeue_after_commit=True,
+		)
 
-		Need another script for cleanup those as well.
-		Try running until unless all resources are cleaned up.
+	def _cleanup(self):
+		documents = []
+		for doc in self.documents:
+			documents.append(
+				frappe._dict(
+					{
+						"doctype": doc.document_type,
+						"name": doc.document_name,
+						"cleanup_status": doc.cleanup_status,
+					}
+				)
+			)
 
-		If it was a user created for this test, delete that user as well, this can be part of previous script as well.
-		"""
-		pass
+		# Fetch script
+		script = frappe.get_value(
+			"Drift Test Setup",
+			frappe.get_value("Drift Test Definition", self.definition, "test_setup"),
+			"script_to_cleanup_resources",
+		)
+
+		try:
+			safe_exec_locals = prepare_safe_exec_locals(self.variables_dict)
+			safe_exec_locals.update({"documents": documents, "doc": self})
+			safe_exec(script, _locals=safe_exec_locals)
+			documents = safe_exec_locals.get("documents", [])
+
+			# Update status of each document
+			for doc in documents:
+				for d in self.documents:
+					if d.document_type == doc.get("doctype") and d.document_name == doc.get("name"):
+						d.cleanup_status = doc.get("cleanup_status", d.cleanup_status)
+						break
+
+			# Check if everything is cleaned up
+			if not any(d.cleanup_status == "Pending" for d in self.documents):
+				self.cleanup_completed = 1
+
+			self.save()
+		except Exception:
+			frappe.log_error(
+				"Failed to cleanup test resources",
+				reference_doctype=self.doctype,
+				reference_name=self.name,
+			)
+
+
+def bulk_garbage_collect_tests():
+	tests = frappe.get_all(
+		"Drift Test",
+		filters={"gc_completed": 0, "status": ["in", ["Success", "Failure", "Stopped", "Cancelled"]]},
+		pluck="name",
+	)
+	for test in tests:
+		with contextlib.suppress(frappe.DoesNotExistError):
+			frappe.get_doc("Drift Test", test)._garbage_collect()
+			frappe.db.commit()
+
+
+def bulk_cleanup_tests():
+	tests = frappe.get_all(
+		"Drift Test",
+		filters={"cleanup_completed": 0, "gc_completed": 1},
+		pluck="name",
+	)
+	for test in tests:
+		with contextlib.suppress(frappe.DoesNotExistError):
+			frappe.get_doc("Drift Test", test)._cleanup()
+			frappe.db.commit()

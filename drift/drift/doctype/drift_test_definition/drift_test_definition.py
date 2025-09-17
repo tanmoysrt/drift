@@ -31,6 +31,7 @@ class DriftTestDefinition(Document):
 		next_execution_on: DF.Datetime | None
 		steps: DF.Table[DriftTestStepDefinition]
 		test_setup: DF.Link
+		user_key: DF.Data
 	# end: auto-generated types
 
 	def validate(self):

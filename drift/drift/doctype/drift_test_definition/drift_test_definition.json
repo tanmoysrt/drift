@@ -7,12 +7,13 @@
  "engine": "InnoDB",
  "field_order": [
   "enabled",
-  "column_break_fzew",
   "test_setup",
   "interval_minutes",
-  "column_break_dngf",
+  "column_break_fzew",
   "last_executed_on",
   "next_execution_on",
+  "column_break_dngf",
+  "user_key",
   "section_break_rdvs",
   "steps"
  ],
@@ -69,6 +70,14 @@
    "label": "Steps",
    "options": "Drift Test Step Definition",
    "reqd": 1
+  },
+  {
+   "default": "session_user",
+   "description": "If this key is in the variables dict, Drift will identify the resources created by this user for cleanup",
+   "fieldname": "user_key",
+   "fieldtype": "Data",
+   "label": "User Key",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
@@ -79,7 +88,7 @@
    "link_fieldname": "definition"
   }
  ],
- "modified": "2025-09-15 21:38:03.541006",
+ "modified": "2025-09-17 18:25:59.812752",
  "modified_by": "Administrator",
  "module": "Drift",
  "name": "Drift Test Definition",

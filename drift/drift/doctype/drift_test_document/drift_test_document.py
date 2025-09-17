@@ -14,6 +14,7 @@ class DriftTestDocument(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		cleanup_status: DF.Literal["Pending", "Failure", "Success"]
 		document_name: DF.DynamicLink
 		document_type: DF.Link
 		parent: DF.Data

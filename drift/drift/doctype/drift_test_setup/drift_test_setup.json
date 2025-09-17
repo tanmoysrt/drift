@@ -6,13 +6,15 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "default_local_variables",
   "test_user_setup_section",
   "user_type",
   "new_user_creation_script",
   "existing_user",
+  "section_break_adbx",
+  "default_local_variables",
   "cleanup_section",
-  "script_to_find_resources_to_cleanup"
+  "script_to_find_resources_to_cleanup",
+  "script_to_cleanup_resources"
  ],
  "fields": [
   {
@@ -64,15 +66,27 @@
    "default": "{}",
    "description": "While executing any script related to test, this variables will be injected in local scope.",
    "fieldname": "default_local_variables",
-   "fieldtype": "JSON",
+   "fieldtype": "Small Text",
    "label": "Default Local Variables",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_adbx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "description": "In local scope, doctype info will be provided in <b>documents</b> variable<br><br>\n<pre>[\n  {\n     \"doctype\": \"Server\",\n     \"name\" : \"f1-mumbai.frappe.cloud\",\n     \"cleanup_status\": \"Pending\"\n  }\n]\n</pre>\n\nValid cleanup statues - [\"Pending\", \"Failure\", \"Success\"]<br>\nDrift will try to run cleanups until unless all the status reach the termination state - [\"Failure\", \"Success\"]",
+   "fieldname": "script_to_cleanup_resources",
+   "fieldtype": "Code",
+   "label": "Script To Cleanup Resources",
+   "options": "Python",
    "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-14 19:45:23.808277",
+ "modified": "2025-09-17 18:48:47.697312",
  "modified_by": "Administrator",
  "module": "Drift",
  "name": "Drift Test Setup",

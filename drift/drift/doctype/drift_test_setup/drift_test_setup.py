@@ -17,9 +17,10 @@ class DriftTestSetup(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		default_local_variables: DF.JSON
+		default_local_variables: DF.SmallText
 		existing_user: DF.Link | None
 		new_user_creation_script: DF.Code | None
+		script_to_cleanup_resources: DF.Code
 		script_to_find_resources_to_cleanup: DF.Code
 		user_type: DF.Literal["Existing User", "New User"]
 	# end: auto-generated types
