@@ -67,6 +67,7 @@ class DriftTestDefinition(Document):
 				},
 			)
 		test.insert(ignore_permissions=True)
+		test.next()
 		self.last_executed_on = frappe.utils.now_datetime()
 		self.next_execution_on = frappe.utils.add_to_date(
 			self.last_executed_on, minutes=self.interval_minutes

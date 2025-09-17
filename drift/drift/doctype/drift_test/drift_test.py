@@ -66,7 +66,7 @@ class DriftTest(Document):
 	@property
 	def session_doc(self) -> Optional["DriftSession"]:
 		if self.session:
-			return frappe.get_cached_doc("Drift Session", self.session)
+			return frappe.get_doc("Drift Session", self.session)
 		return None
 
 	def on_update(self):
@@ -77,9 +77,7 @@ class DriftTest(Document):
 
 	def execute_step(self, step_name: str):
 		step = self._get_step(step_name)
-		step_definition: DriftTestStepDefinition = frappe.get_cached_doc(
-			"Drift Test Step Definition", step.step
-		)
+		step_definition: DriftTestStepDefinition = frappe.get_doc("Drift Test Step Definition", step.step)
 		code = step_definition.code.strip()
 		code = code.replace("{{sid}}", self.session_user_sid or "")
 
@@ -132,7 +130,7 @@ class DriftTest(Document):
 				import traceback
 
 				step.status = "Failure"
-				step.error = str(e)
+				step.error = str(e).splitlines()[0][:120]
 				step.traceback = traceback.format_exc()
 
 			finally:

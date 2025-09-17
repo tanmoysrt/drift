@@ -8,8 +8,13 @@ def prepare_safe_exec_locals(variables: dict) -> dict:
 	import time
 	from time import sleep
 
+	from playwright import sync_api
+
 	locals_data = {"variables": frappe._dict(variables or {})}
 
+	locals_data["pw"] = frappe._dict(
+		{attr: getattr(sync_api, attr) for attr in sync_api.__all__ if not attr.startswith("_")}
+	)
 	locals_data["re"] = re
 	locals_data["get_login_sid"] = get_login_sid
 	locals_data["time"] = time
