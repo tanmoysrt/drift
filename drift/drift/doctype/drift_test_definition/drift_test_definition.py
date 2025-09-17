@@ -64,6 +64,7 @@ class DriftTestDefinition(Document):
 				"steps",
 				{
 					"step": step.name,
+					"step_title": step.title,
 					"status": "Pending",
 				},
 			)

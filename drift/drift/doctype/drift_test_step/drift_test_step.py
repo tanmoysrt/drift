@@ -24,7 +24,7 @@ class DriftTestStep(Document):
 		parenttype: DF.Data
 		started_at: DF.Datetime | None
 		status: DF.Literal["Pending", "Running", "Success", "Failure"]
-		step: DF.Link
+		step: DF.Data | None
 		step_title: DF.Data | None
 		traceback: DF.Code | None
 	# end: auto-generated types
