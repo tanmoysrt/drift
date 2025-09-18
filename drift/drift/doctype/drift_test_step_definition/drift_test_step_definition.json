@@ -12,10 +12,29 @@
   "column_break_ogmb",
   "wait_for_completion",
   "timeout_seconds",
+  "wait_duration_sec",
   "type_ui_navigation_section",
   "ui_navigation_type",
   "column_break_apgr",
   "ui_navigation_goto_url",
+  "section_playwright_locator_config",
+  "playwright_locator_type",
+  "playwright_locator_exact_match",
+  "column_break_mkhf",
+  "playwright_locator_role",
+  "playwright_locator_text",
+  "playwright_custom_locator",
+  "section_playwright_action",
+  "playwright_action",
+  "playwright_action_timeout_sec",
+  "column_break_boci",
+  "playwright_action_value",
+  "section_playwright_wait",
+  "playwright_wait_type",
+  "playwright_wait_timeout_sec",
+  "column_break_dsqb",
+  "playwright_wait_for_load_state",
+  "playwright_wait_for_url_pattern",
   "type_server_script_section",
   "server_script"
  ],
@@ -25,7 +44,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "UI Navigation\nServer Script\nSetup User Session",
+   "options": "Playwright Action\nUI Navigation\nPlaywright Wait\nWait\nSetup User Session\nServer Script",
    "reqd": 1
   },
   {
@@ -44,17 +63,16 @@
    "depends_on": "eval: doc.wait_for_completion",
    "fieldname": "timeout_seconds",
    "fieldtype": "Int",
-   "label": "Timeout (Seconds)",
+   "label": "Timeout (seconds)",
    "mandatory_depends_on": "eval: doc.wait_for_completion"
   },
   {
    "depends_on": "eval: doc.type == \"Server Script\"",
    "fieldname": "type_server_script_section",
-   "fieldtype": "Section Break",
-   "label": "Type - Server Script"
+   "fieldtype": "Section Break"
   },
   {
-   "description": "In the server script, few object will be available.<br>\n\n<ul>\n  <li><b>doc</b> - Drift Test doc</li>\n  <li><b>variables</b> - Dictionary of variables</li>\n  <li><b>pw_ctx</b> - Playwright browser context</li>\n  <li><b>pw_page</b> - Playwright browser page</li>\n</ul><br>\n\n\n<i>Need adequate docs</i>",
+   "description": "In the server script, few object will be available.<br>\n\n<ul>\n  <li><b>doc</b> - Drift Test doc</li>\n  <li><b>variables</b> - Dictionary of variables</li>\n  <li><b>pw_ctx</b> - Playwright browser context</li>\n  <li><b>pw_page</b> - Playwright browser page</li>\n</ul>\n\nWrite the result <b>result</b> variable.<br>\n<pre>result = (  False  ,    False )\n       = ( Success ,  Failure ) \n</pre>\n\nSet both the variables to <b>False</b>, If you want to keep the status in <b>Running</b> and retry again",
    "fieldname": "server_script",
    "fieldtype": "Code",
    "label": "Server Script",
@@ -64,7 +82,7 @@
    "depends_on": "eval: doc.type == \"UI Navigation\"",
    "fieldname": "type_ui_navigation_section",
    "fieldtype": "Section Break",
-   "label": "Type - UI Navigation"
+   "label": "UI Navigation"
   },
   {
    "fieldname": "ui_navigation_type",
@@ -78,7 +96,7 @@
   },
   {
    "depends_on": "eval: doc.ui_navigation_type == \"Goto\"",
-   "description": "Add the {{sid}} to inject sid in url for auto-login",
+   "description": "Add the {{doc.session_user_sid}} to inject sid in url for auto-login",
    "fieldname": "ui_navigation_goto_url",
    "fieldtype": "Data",
    "label": "Goto URL",
@@ -91,13 +109,144 @@
    "in_standard_filter": 1,
    "label": "Title",
    "reqd": 1
+  },
+  {
+   "documentation_url": "https://playwright.dev/python/docs/locators#quick-guide",
+   "fieldname": "playwright_locator_type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "mandatory_depends_on": "eval: doc.type == \"Playwright Action\"",
+   "options": "Get By Label\nGet By Role\nGet By Text\nGet By Placeholder\nCustom Locator"
+  },
+  {
+   "fieldname": "column_break_mkhf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: doc.playwright_locator_type != \"Custom Locator\"",
+   "fieldname": "playwright_locator_text",
+   "fieldtype": "Data",
+   "label": "Visible Text",
+   "mandatory_depends_on": "eval: doc.type == \"Playwright Action\" && doc.playwright_locator_type != \"Custom Locator\""
+  },
+  {
+   "default": "0",
+   "depends_on": "eval: doc.playwright_locator_type != \"Custom Locator\"",
+   "fieldname": "playwright_locator_exact_match",
+   "fieldtype": "Check",
+   "label": "Exact Match"
+  },
+  {
+   "depends_on": "eval: doc.playwright_locator_type == \"Get By Role\"",
+   "fieldname": "playwright_locator_role",
+   "fieldtype": "Select",
+   "label": "Role",
+   "mandatory_depends_on": "eval: doc.playwright_locator_type == \"Get By Role\"",
+   "options": "button\nlink\ntextbox\ncheckbox\nradio\nswitch\ncombobox\nlistbox\noption\nlist\nlistitem\ntab\ntablist\ntabpanel\nmenu\nmenubar\nmenuitem\ndialog\nalert\nalertdialog\ntooltip\nprogressbar\nslider\nnavigation\nform\nmain\nbanner\ncontentinfo\nregion\nsearch\nheading\narticle\ntable\nrow\ncell\ncolumnheader"
+  },
+  {
+   "depends_on": "eval: doc.playwright_locator_type == \"Custom Locator\"",
+   "documentation_url": "https://playwright.dev/python/docs/other-locators",
+   "fieldname": "playwright_custom_locator",
+   "fieldtype": "Data",
+   "label": "Custom Locator",
+   "mandatory_depends_on": "eval: doc.playwright_locator_type == \"Custom Locator\""
+  },
+  {
+   "depends_on": "eval: doc.type == \"Playwright Action\"",
+   "fieldname": "section_playwright_locator_config",
+   "fieldtype": "Section Break",
+   "label": "Locator Configuration"
+  },
+  {
+   "depends_on": "eval: doc.type == \"Playwright Action\"",
+   "fieldname": "section_playwright_action",
+   "fieldtype": "Section Break",
+   "label": "Playwright Action"
+  },
+  {
+   "fieldname": "playwright_action",
+   "fieldtype": "Select",
+   "label": "Action",
+   "mandatory_depends_on": "eval: doc.type == \"Playwright Action\"",
+   "options": "Click\nDouble Click\nMark Checkbox\nUnmark Checkbox\nFill Text\nSelect Option\nClear Field"
+  },
+  {
+   "fieldname": "column_break_boci",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "30",
+   "description": "0 -> Disabled. Don't set to zero",
+   "fieldname": "playwright_action_timeout_sec",
+   "fieldtype": "Int",
+   "label": "Timeout (seconds)",
+   "mandatory_depends_on": "eval: doc.type == \"Playwright Action\""
+  },
+  {
+   "depends_on": "eval: doc.playwright_action == \"Fill Text\" || doc.playwright_action == \"Select Option\"",
+   "description": "Supports Jinja\n<br>\n<pre>{\n  \"doc\": &lt;Drift Test&gt;,\n  \"variables\": {....}\n}\n</pre>",
+   "fieldname": "playwright_action_value",
+   "fieldtype": "Data",
+   "label": "Value",
+   "mandatory_depends_on": "eval: doc.playwright_action == \"Fill Text\" || doc.playwright_action == \"Select Option\""
+  },
+  {
+   "depends_on": "eval: doc.type == \"Playwright Wait\"",
+   "fieldname": "section_playwright_wait",
+   "fieldtype": "Section Break",
+   "label": "Playwright Wait"
+  },
+  {
+   "fieldname": "playwright_wait_type",
+   "fieldtype": "Select",
+   "label": "Wait For",
+   "mandatory_depends_on": "eval: doc.type == \"Playwright Wait\"",
+   "options": "Load State\nURL Pattern"
+  },
+  {
+   "fieldname": "column_break_dsqb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: doc.playwright_wait_type == \"Load State\"",
+   "documentation_url": "https://playwright.dev/python/docs/api/class-frame#frame-wait-for-load-state",
+   "fieldname": "playwright_wait_for_load_state",
+   "fieldtype": "Select",
+   "label": "Load State",
+   "mandatory_depends_on": "eval: doc.playwright_wait_type == \"Load State\"",
+   "options": "Load\nDOM Content Loaded\nNetwork Idle"
+  },
+  {
+   "depends_on": "eval: doc.playwright_wait_type == \"URL Pattern\"",
+   "description": "<b>Examples -</b> <br>\n-&gt; https://google.com/** <br>\n-&gt; **/app/** <br>\n-&gt; https://{{variables.site}}/** <br>\n<br>\n<b>Supports Jinja</b>, available args -\n<br>\n<pre>{\n  \"doc\": &lt;Drift Test&gt;,\n  \"variables\": {....}\n}\n</pre>",
+   "fieldname": "playwright_wait_for_url_pattern",
+   "fieldtype": "Data",
+   "label": "URL Pattern",
+   "mandatory_depends_on": "eval: doc.playwright_wait_type == \"URL Pattern\""
+  },
+  {
+   "default": "30",
+   "description": "0 -> Disabled. Don't set to zero",
+   "fieldname": "playwright_wait_timeout_sec",
+   "fieldtype": "Int",
+   "label": "Timeout (seconds)",
+   "mandatory_depends_on": "eval: doc.type == \"Playwright Wait\""
+  },
+  {
+   "default": "10",
+   "depends_on": "eval: doc.type == \"Wait\"",
+   "fieldname": "wait_duration_sec",
+   "fieldtype": "Int",
+   "label": "Wait Duration (seconds)",
+   "mandatory_depends_on": "eval: doc.type == \"Wait\""
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-16 01:08:56.011661",
+ "modified": "2025-09-19 00:05:43.314654",
  "modified_by": "Administrator",
  "module": "Drift",
  "name": "Drift Test Step Definition",

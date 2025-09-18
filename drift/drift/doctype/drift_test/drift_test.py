@@ -81,13 +81,10 @@ class DriftTest(Document):
 	def execute_step(self, step_name: str):
 		step = self._get_step(step_name)
 		step_definition: DriftTestStepDefinition = frappe.get_doc("Drift Test Step Definition", step.step)
-		code = step_definition.code.strip()
-		code = code.replace("{{sid}}", self.session_user_sid or "")
 
 		with self.session_doc.pw_browser() as browser:
 			safe_exec_locals = prepare_safe_exec_locals(self.variables_dict)
 			try:
-				frappe.msgprint(f"Code -<br><br>{code}")
 				if not step.started_at:
 					step.started_at = frappe.utils.now_datetime()
 
@@ -97,6 +94,11 @@ class DriftTest(Document):
 				pw_context = browser.contexts[0] if browser.contexts else browser.new_context()
 				pw_page = pw_context.pages[0] if pw_context.pages else pw_context.new_page()
 				safe_exec_locals.update({"pw_ctx": pw_context, "pw_page": pw_page, "doc": self})
+
+				# Generate the code
+				code = step_definition.get_code(safe_exec_locals).strip()
+				if frappe.conf.developer_mode:
+					print(f"Executing step {step.name} of test {self.name}:\n{code}\n---")
 
 				# Execute the code
 				safe_exec(code, _locals=safe_exec_locals)
