@@ -23,107 +23,171 @@ frappe.ui.form.on("Drift Session", {
 	},
 });
 
-async function playRecordedVideos() {
-    // Fetch URLs from server
-	const e = await cur_frm.call("get_recorded_video_urls");
-	const videoLinks = e.message || [];
-
-	if (!Array.isArray(videoLinks) || videoLinks.length === 0) {
-		console.warn("No video URLs received");
-		info.textContent = "No videos found";
-		return;
+function loadPlyr(callback) {
+    if (window.Plyr) {
+        callback();
+        return;
     }
-    
-	const container = document.getElementById("video_container");
 
-	// Clear container
-	container.innerHTML = "";
+    // Load CSS
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.css";
+    document.head.appendChild(link);
 
-	// Create <video> element
-	const videoEl = document.createElement("video");
-	videoEl.id = "video_html";
-	videoEl.controls = true;
-	videoEl.playsInline = true;
-	videoEl.muted = true; // required for autoplay
-	videoEl.style.width = "100%";
-	videoEl.style.maxWidth = "800px";
-	videoEl.style.background = "#000";
-	container.appendChild(videoEl);
-
-	// Create control bar
-	const controls = document.createElement("div");
-	controls.style.marginTop = "8px";
-	controls.style.display = "flex";
-    controls.style.justifyContent = "center";
-    controls.style.alignItems = "center";
-	controls.style.gap = "10px";
-	container.appendChild(controls);
-
-    const prevBtn = document.createElement("button");
-    prevBtn.classList.add("btn", "btn-default", "ellipsis");
-	prevBtn.textContent = "Prev";
-	controls.appendChild(prevBtn);
-
-	const info = document.createElement("span");
-	info.textContent = "Video 0/0";
-	controls.appendChild(info);
-
-	const nextBtn = document.createElement("button");
-	nextBtn.classList.add("btn", "btn-default", "ellipsis");
-	nextBtn.textContent = "Next";
-	controls.appendChild(nextBtn);
-
-	let idx = 0;
-
-	function updateInfo() {
-		info.textContent = `Video ${idx + 1} / ${videoLinks.length}`;
-	}
-
-	function playIndex(i) {
-		if (i < 0 || i >= videoLinks.length) {
-			alert("No more videos");
-			return;
-		}
-		idx = i;
-		videoEl.src = videoLinks[i];
-		videoEl.load();
-
-		videoEl.onloadedmetadata = () => {
-			updateInfo();
-			console.log(
-				"Loaded:",
-				videoLinks[i],
-				"Duration:",
-				videoEl.duration,
-				"Resolution:",
-				videoEl.videoWidth + "x" + videoEl.videoHeight
-			);
-
-			// force decode of first frame
-			if (videoEl.currentTime === 0) {
-				try { videoEl.currentTime = 0.01; } catch (e) {}
-			}
-
-			videoEl.play().catch((err) => {
-				console.warn("Autoplay blocked:", err);
-			});
-		};
-	}
-
-	// Auto-advance on end
-	videoEl.addEventListener("ended", () => {
-		if (idx + 1 < videoLinks.length) {
-			playIndex(idx + 1);
-		}
-	});
-
-	// Button handlers
-	prevBtn.addEventListener("click", () => {
-		if (idx > 0) playIndex(idx - 1);
-	});
-	nextBtn.addEventListener("click", () => {
-		if (idx + 1 < videoLinks.length) playIndex(idx + 1);
-	});
-
-	playIndex(0);
+    // Load JS
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js";
+    script.onload = callback;
+    document.body.appendChild(script);
 }
+
+async function playRecordedVideos() {
+    loadPlyr(async () => {
+        // Fetch URLs from server
+        const e = await cur_frm.call("get_recorded_video_urls");
+        const videoLinks = e.message || [];
+
+        if (!Array.isArray(videoLinks) || videoLinks.length === 0) {
+            console.warn("No video URLs received");
+            return;
+        }
+
+        const container = document.getElementById("video_container");
+
+        // Clear container
+        container.innerHTML = "";
+
+        // Create <video> element
+        const videoEl = document.createElement("video");
+        videoEl.id = "video_html";
+        videoEl.playsInline = true;
+        videoEl.muted = true; // required for autoplay
+        videoEl.style.width = "100%";
+        videoEl.style.background = "#000";
+
+        const source = document.createElement("source");
+        videoEl.appendChild(source);
+
+        container.appendChild(videoEl);
+
+        // Init Plyr
+        const player = new Plyr(videoEl, {
+            controls: [
+                'play', 'progress', 'current-time',
+                 'fullscreen', 'next', 'previous'
+            ],
+            speed: {
+                selected: 1,
+                options: [1, 2, 4, 8]
+            }
+		});
+
+		player.on('ready', () => {
+			const controlsBar = player.elements.controls;
+
+			// Create speed dropdown
+			const select = document.createElement("select");
+			select.style.padding = "8px 8px";
+			select.style.fontSize = "14px";
+			select.className = "plyr__controls__item plyr__control";
+			select.id = "playback_rate";
+
+			[1, 2, 4, 8].forEach(rate => {
+				const option = document.createElement("option");
+				option.value = rate;
+				option.textContent = rate + "x";
+				if (rate === 1) option.selected = true;
+				select.appendChild(option);
+			});
+
+			// Change playback speed
+			select.addEventListener("change", () => {
+				player.speed = parseFloat(select.value);
+			});
+
+			controlsBar.appendChild(select);
+		});
+		
+		document.addEventListener("keydown", (e) => {
+			if (e.code === "Space") {
+				e.preventDefault();
+				if (player.playing) {
+					player.pause();
+				} else {
+					player.play();
+				}
+			}
+		});
+
+
+        // Create custom control bar (Prev / Next / Info)
+        const controls = document.createElement("div");
+        controls.style.marginTop = "8px";
+        controls.style.display = "flex";
+        controls.style.justifyContent = "center";
+        controls.style.alignItems = "center";
+        controls.style.gap = "10px";
+        container.appendChild(controls);
+
+        const prevBtn = document.createElement("button");
+        prevBtn.classList.add("btn", "btn-default", "ellipsis");
+        prevBtn.textContent = "Prev";
+        controls.appendChild(prevBtn);
+
+        const info = document.createElement("span");
+        info.textContent = "Video 0/0";
+        controls.appendChild(info);
+
+        const nextBtn = document.createElement("button");
+        nextBtn.classList.add("btn", "btn-default", "ellipsis");
+        nextBtn.textContent = "Next";
+        controls.appendChild(nextBtn);
+
+        let idx = 0;
+
+        function updateInfo() {
+            info.textContent = `Video ${idx + 1} / ${videoLinks.length}`;
+        }
+
+        function playIndex(i) {
+            if (i < 0 || i >= videoLinks.length) {
+                alert("No more videos");
+                return;
+            }
+            idx = i;
+
+            source.src = videoLinks[i];
+            videoEl.load();
+
+            videoEl.onloadedmetadata = () => {
+				updateInfo();
+				const selectedRate = parseFloat(document.getElementById("playback_rate").value);
+		        player.speed = selectedRate;
+
+                player.play().catch(err => {
+                    console.warn("Autoplay blocked:", err);
+                });
+            };
+        }
+
+        // Auto-advance on end
+        player.on('ended', () => {
+            if (idx + 1 < videoLinks.length) {
+                playIndex(idx + 1);
+            }
+        });
+
+        // Button handlers
+        prevBtn.addEventListener("click", () => {
+            if (idx > 0) playIndex(idx - 1);
+        });
+        nextBtn.addEventListener("click", () => {
+            if (idx + 1 < videoLinks.length) playIndex(idx + 1);
+        });
+
+        // Start with first video
+        playIndex(0);
+    });
+}
+
